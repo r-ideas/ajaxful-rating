@@ -19,7 +19,7 @@ module AjaxfulRating # :nodoc:
     #   end
     def ajaxful_rateable(options = {})
       has_many :rates_without_dimension, :as => :rateable, :class_name => 'Rate',
-        :dependent => :destroy, :conditions => {:dimension => nil}
+        :dependent => :destroy
       has_many :raters_without_dimension, :through => :rates_without_dimension, :source => :rater
 
       class << self
@@ -235,13 +235,14 @@ module AjaxfulRating # :nodoc:
     def find_statement(attr_name, attr_value, dimension = nil)
       sql = "SELECT DISTINCT r2.* FROM rates r1 INNER JOIN "\
         "#{self.base_class.table_name} r2 ON r1.rateable_id = r2.id WHERE "
-      
-      sql << sanitize_sql_for_conditions({
+
+      where_params = {
         :rateable_type => self.base_class.name,
-        attr_name => attr_value,
-        :dimension => (dimension.to_s if dimension)
-      }, 'r1')
-      
+        attr_name => attr_value
+      }
+      where_params.update(:dimension => dimension.to_s) if dimension
+      sql << sanitize_sql_for_conditions(where_params, 'r1')
+
       find_by_sql(sql)
     end
 
