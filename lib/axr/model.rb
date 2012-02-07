@@ -117,11 +117,10 @@ module AjaxfulRating # :nodoc:
       sql = "SELECT DISTINCT u.* FROM #{self.class.user_class.table_name} u "\
         "INNER JOIN rates r ON u.id = r.rater_id WHERE "
       
-      sql << self.class.send(:sanitize_sql_for_conditions, {
-        :rateable_id => id,
-        :rateable_type => self.class.base_class.name,
-        :dimension => (dimension.to_s if dimension)
-      }, 'r')
+      where_params = { :rateable_id => id, :rateable_type => self.class.base_class.name }
+      where_params.update(:dimension => dimension.to_s) if dimension
+
+      sql << self.class.send(:sanitize_sql_for_conditions, where_params, 'r')
       
       self.class.user_class.find_by_sql(sql)
     end
