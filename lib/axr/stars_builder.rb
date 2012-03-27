@@ -12,8 +12,15 @@ module AjaxfulRating # :nodoc:
     
     def show_value
       if options[:show_user_rating]
-        rate = rateable.rate_by(user, options[:dimension]) if user
-        rate ? rate.stars : 0
+        if user
+          if defined?(AXR_DIMENSIONS) && options[:dimension].nil?
+            AXR_DIMENSIONS.map{ |d| rateable.rate_by(user, d).stars.to_i }.sum/AXR_DIMENSIONS.size.to_f
+          else
+            rateable.rate_by(user, options[:dimension]).try(:stars).to_i
+          end
+        else
+          0
+        end
       else
         rateable.rate_average(true, options[:dimension])
       end
