@@ -186,6 +186,10 @@ module AjaxfulRating # :nodoc:
       if self.class.caching_average?(dimension)
         update_attribute caching_column_name(dimension), self.rate_average(false, dimension)
       end
+
+      if self.class.caching_average?
+        update_attribute caching_column_name, self.rate_average(false)
+      end
     end
   end
 
