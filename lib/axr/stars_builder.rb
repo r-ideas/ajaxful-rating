@@ -14,7 +14,7 @@ module AjaxfulRating # :nodoc:
       if options[:show_user_rating]
         if user
           if defined?(AXR_DIMENSIONS) && options[:dimension].nil?
-            AXR_DIMENSIONS.map{ |d| rateable.rate_by(user, d).stars.to_i }.sum/AXR_DIMENSIONS.size.to_f
+            AXR_DIMENSIONS.map{ |d| rateable.rate_by(user, d).try(:stars).to_i }.sum/AXR_DIMENSIONS.size.to_f
           else
             rateable.rate_by(user, options[:dimension]).try(:stars).to_i
           end
